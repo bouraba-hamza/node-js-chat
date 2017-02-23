@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link  type="text/css" rel="stylesheet" href="../bootstrap/dist/css/bootstrap.css"/>
+    <link  type="text/css" rel="stylesheet" href="../css/style.css"/>
+    <script type="text/javascript" src="../jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="../bootstrap/dist/js/bootstrap.js"></script>
+
+    <title>ONLINE NODEJS/EXPRESS CHAT</title>
+
+    <script>
+
+        $(function() {
+
+            $("input[type='submit']").click(function() {
+
+                window.location = "/room/"+$("input[type='text']").val();
+            })
+        })
+
+    </script>
+
+</head>
+<body>
+
+<div class="login-form-section">
+   <div class="chat-logo">
+
+       <img src="../images/nodejs_logo.png"/>
+   </div>
+    <div class="login-content  animated bounceIn" data-animation="bounceIn">
+
+            <div class="section-title">
+                <h3>LogIn to your Account</h3>
+            </div>
+
+           <table class="table">
+               <tr>
+                   <td>PSEUDO</td>
+                   <td><input type="text" name="pseudo" required name="pseudo" class="form-control"></td>
+               </tr>
+
+               <tr>
+                   <td></td>
+                   <td><input type="submit" value="Rejoignez le chat NodeJs" class="btn btn-success"></td>
+               </tr>
+               </table>
+
+    </div>
+
+</div>
+</body>
+</html>

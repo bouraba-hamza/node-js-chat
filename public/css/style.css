@@ -1,0 +1,337 @@
+.login-content {
+    width : 700px;
+    height : 300px;
+    margin : 200px  auto 0 auto;
+
+}
+
+.chat-logo {
+    width : 100%;
+    height : 100px;
+    margin : 0 auto 0px auto;
+    background-color :#67b168;
+}
+
+.chat-logo img {
+    display : block;
+    margin : 0 auto;
+}
+
+.table td {
+    padding-top : 30px!important;
+    padding-bottom : 30px!important;
+}
+
+.section-title h3 {padding-bottom : 20px;}
+
+.room-header {
+    width : 100%;
+    height : 40px;
+    background-color : #67b168;
+    position : relative;
+}
+
+.room-header h4:first-child {
+    width : 400px;
+    height : 40px;
+    position :absolute;
+    left : 20px;
+    color : #FFF;
+
+}
+
+.room-container {
+    width : 99%;
+    margin : 10px auto 0 auto;
+    position : relative;
+}
+
+.user-container {
+
+    width : 300px;
+    height : 100%;
+    position : absolute;
+    right : 0;
+    top : 0;
+}
+
+.user-title {
+    width: 100%;
+    height : 40px;
+    background-color : #67b168;
+    position : relative;
+}
+
+.user-title h5 {
+    color : #FFF;
+    position : absolute;
+    top : 2px;
+    left : 5px;
+    font-weight : bold;
+
+}
+
+.user-info {
+    width : 100%;
+    margin-top : 5px;
+}
+
+.user-info ul {
+    padding : 0px;
+    list-style: none;
+}
+
+.user-info ul li {
+    width : 100%;
+    height : 40px;
+    border-bottom : 1px solid #ccc;
+    position : relative;
+    -webkit-transition : all 0.3s;
+}
+
+.user-info ul li:hover {
+    background-color : palegreen;
+    cursor : pointer;
+}
+
+.user-info .user-img {
+    position : absolute;
+    width : 15px;
+    height : 15px;
+    top : 10px;
+    left : 10px;
+    border-radius : 15px;
+}
+
+.f {
+    background-color : #67b168;
+}
+
+.h {
+    background-color : #2b542c;
+}
+
+.user-info ul li p {
+    color : #2b542c;
+    position: absolute;
+    left: 30px;
+    top: 6px;
+    font-size: 17px;
+    font-family : "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+}
+
+.messages-container {
+    position : absolute;
+    left : 0px;
+    top : 0px;
+    height : 100%;
+
+}
+
+.messages {
+
+    width : 100%;
+    position : absolute;
+    top : 45px;
+    left : 0;
+    overflow : auto;
+
+}
+
+.send-messages {
+
+    width : 100%;
+    height : 120px;
+    position : absolute;
+    bottom : 0;
+    left : 0;
+
+}
+
+.messages ul {
+    padding : 0px;
+    list-style: none;
+}
+
+.messages ul li {
+    padding-left : 10px;
+    width : 100%;
+    height : 30px;
+    position : relative;
+    -webkit-transition : all 0.3s;
+    line-height: 30px;
+}
+
+.messages ul li  {
+
+    font-weight : bold;
+    color : #3e8f3e;
+}
+
+.messages ul li span {
+    color : #222222;
+    font-weight: normal;
+}
+
+.send-messages input {
+
+    margin-top : 5px;
+}
+
+.send-messages button {
+
+    margin-top : 5px;
+}
+
+.emoticone-container img {
+    cursor : pointer;
+}
+
+.me_txt {
+    color : red!important;
+    font-weight : bold!important;
+}
+
+.private_chat {
+    width: 400px;
+    height : 400px;
+    background-color : #fff;
+    position : fixed;
+    bottom : 0px;
+    right : 320px;
+    border-left : 1px solid #eea236;
+    border-right : 1px solid #eea236;
+    display : none;
+    z-index : 2;
+}
+
+.private_chat h3 {
+    margin-left : 10px;
+    color : #3c3c3c!important;
+}
+
+.private_chat_title {
+    width : 100%;
+    height : 30px;
+    color : #FFF;
+    background-color : #f0ad4e;
+    padding-left : 10px;
+    line-height: 31px;
+    font-weight: bold;
+    position : relative;
+}
+.private_chat_title a {
+    color : #FFF;
+    text-decoration : none;
+    position : absolute;
+    right : 10px;
+    top : -3px;
+}
+
+.private_message {
+    width : 100%;
+    height: 250px;
+    overflow : auto;
+}
+
+.private_message ul {
+    padding-left : 15px;
+    list-style:  none;
+    margin-top : 5px;
+}
+.private_message ul li {
+    width: 100%;
+    height : 30px;
+    line-height: 29px;
+}
+.private_message_form {
+    width : 100%;
+    height: 74px;
+    position : absolute;
+    bottom : 0;
+    left : 0;
+}
+
+.private_message_form input {
+    position : absolute;
+    left : 5px;
+    top: 36px;
+    height : 30px;
+    width: 306px;
+    color: black;
+}
+
+.private_message_form button {
+    position : absolute;
+    right : 5px;
+    bottom: 7px;
+}
+
+.prv_username {
+    font-weight : bold;
+    color : #3e8f3e;
+}
+
+.prv_msg {
+    color : #222222;
+}
+
+.private-emoticone-container {
+
+    direction: ltr;
+    padding-left : 10px;
+}
+
+.conversation-container {
+    width: 647px;
+    height : 36px;
+    position : absolute;
+    left: 386px;
+    top : 2px;
+}
+.conversation-container h5 {
+
+    color : #FFF;
+
+    font-weight: bold;
+    font-style: italic;
+
+    position : absolute;
+
+    left: 0px;
+
+    top: 0px;
+}
+.conversation-container ul {
+    padding : 0px;
+    list-style : none;
+    position: absolute;
+    left: 110px;
+    top: -1px;
+}
+
+.conversation-container ul li {
+    float : left;
+    padding : 8px 10px;
+    color : #FFF;
+    cursor : pointer;
+
+    -webkit-transition : all 0.5s;
+}
+
+.conversation-container ul li:hover {
+    background-color : #f7ecb5;
+    color : orange;
+}
+
+.private-sender-username {
+    font-weight : bold;
+    color : #2b542c;
+}
+
+.vu  {
+    position : absolute;
+    bottom : 32px;
+    left : 9px;
+}

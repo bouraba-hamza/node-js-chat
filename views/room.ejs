@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link  type="text/css" rel="stylesheet" href="../bootstrap/dist/css/bootstrap.css"/>
+    <link  type="text/css" rel="stylesheet" href="../css/style.css"/>
+    <script type="text/javascript" src="../jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="../bootstrap/dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="../js/height.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <title>NODEJS/EXPRESS CHAT</title>
+
+    <script>
+
+        var socket=null;
+
+        $(function() {
+
+            $(".emoticone-container").find("img").click(function() {
+
+               var path = $(this).attr("src");
+
+               var name = path.split("/");
+
+                 name = name[name.length-1];
+
+                 name = name.split(".");
+
+                 name = name[0];
+
+                var value = $(".send-messages").find("input[type='text']").val();
+
+                $(".send-messages").find("input[type='text']").val(value+" "+name+" ").focus();
+
+
+            });
+
+
+            $(".send-messages").find("input[type='text']").keypress(function(e) {
+
+
+                if(e.keyCode == 13) {
+
+                    var message = $(this).val();
+                    var username = $("span.username").text();
+
+                    $(this).val("");
+
+                    send_message(message,username);
+
+
+                }
+
+            })
+
+        $(".send-messages").find("button").click(function() {
+
+            var message = $(this).prev().val();
+            var username = $("span.username").text();
+
+            $(this).prev().val("");
+
+            send_message(message,username);
+
+
+            return false;
+
+        });
+
+        socket = io.connect('http://localhost:3700');
+
+        socket.emit('join', $("span.username").text());
+
+        socket.on("users-list",function(data) {
+
+                update_connected_users(data);
+
+            });
+
+        socket.on("new_message",function(message) {
+
+                add_message_to_list(message);
+
+            });
+
+        socket.on("last_messages",function(messages) {
+
+                add_last_messages(messages);
+
+            });
+
+        socket.on("new_private_message",function(message) {
+
+               new_private_received_msg(message);
+
+            });
+
+            socket.on("user_vu",function(message) {
+
+                set_user_vu(message);
+
+            });
+
+
+
+            $(window).bind("beforeunload", function() {
+
+                socket.emit("close_chat",$("span.username").text())
+            })
+
+
+
+        });
+
+
+        function update_connected_users(data) {
+
+            $(".user-info").find("ul").find("li").remove();
+
+            var cnt=0;
+            for(var i=0;i<data.length;i++) {
+
+                var user_li =  "<li onclick='new_conversation(this)'>";
+                user_li += "<div class='user-img f'>";
+                user_li += "</div>";
+                user_li += "<p>"+data[i].username+"</p>";
+                user_li += "</li>";
+
+                if (data[i].username != $("span.username").text() && data[i].username!=null)
+                {
+                    $(".user-info").find("ul").append(user_li);
+                    cnt++;
+                }
+
+            }
+
+            if(cnt==0) {
+
+                $(".user-info").find("ul").append("<li>Pas d'utilisateurs</li>");
+
+            }
+        }
+
+
+        function add_last_messages(messages) {
+
+            console.log(messages)
+
+            for(var i=0;i<messages.length;i++) {
+                console.log(messages)
+                var username = messages[i].split(":");
+                username = username[0].trim();
+
+                var my_username = $("span.username").text();
+
+                if (username == my_username ) add_my_msg(messages[i],true);
+
+                else add_message_to_list(messages[i]);
+
+
+            }
+
+        }
+
+        function add_message_to_list(message) {
+
+            var html = prepare_message(message);
+
+            $(".messages").find("ul").append(html);
+
+            scroll_window();
+
+        }
+
+
+        function add_my_msg(message,last) {
+
+            if (last) {
+
+                message = message.split(":");
+                message = message[1].trim();
+            }
+            var html = prepare_message("<span class='me_txt'>Moi</span> : "+message);
+            $(".messages").find("ul").append(html);
+
+            scroll_window();
+        }
+
+
+        function prepare_message(message) {
+
+            var dmsg = message.split(":");
+
+            var html = "<li>";
+            html += dmsg[0];
+            html += " : <span>";
+            html +=dmsg[1];
+            html += "</span>";
+            html += "</li>";
+
+            html = check_emo(html);
+
+            return html;
+        }
+        function send_message(message,username) {
+
+            socket.emit("user_message",username+":"+message);
+
+            add_my_msg(message,false);
+
+        }
+
+
+
+
+        function check_emo(html) {
+
+            html =  html.replace("emo1","<img src='../images/emo1.jpg' />");
+            html =  html.replace("emo2","<img src='../images/emo2.jpg' />");
+            html =  html.replace("emo3","<img src='../images/emo3.jpg' />");
+            html =  html.replace("emo4","<img src='../images/emo4.jpg' />");
+            html =  html.replace("emo5","<img src='../images/emo5.jpg' />");
+
+           return html;
+        }
+
+        function scroll_window() {
+
+
+            var value= 0;
+
+            var last_li_top = $(".messages").find("ul").find("li:last").offset().top;
+
+            $(".messages").animate({"scrollTop":last_li_top+"px"},100);
+        }
+
+
+        /////// conversation privé
+
+        function new_conversation(element) {
+
+            var cnt=0;
+
+            $(".private_chat").find(".private_chat_title").find("b").each(function() {
+
+
+                if ($(this).text().trim() == $(element).find("p").text())  cnt++;
+
+
+            });
+
+
+            if (cnt == 0) {
+                if ($(".private_chat").length <= 2) {
+
+                    var conversation = $(".private-chat-room-clone").find(".private_chat").clone();
+
+                    var username = $(element).find("p").text();
+
+                    $(conversation).find(".receiver_username").val(username);
+
+                    $(conversation).find(".private_message").find("ul").find("li").remove();
+
+                    $(conversation).find(".private_chat_title").find("b").html(" " + username);
+
+
+                    $("body").append(conversation);
+
+                    if ($(".private_chat").length >= 2) {
+
+                        $(conversation).css("right", 320 + (408 * ($(".private_chat").length - 2)) + "px")
+
+                    }
+
+                    $(conversation).show();
+
+
+                    $(conversation).find(".private_message").find("p").text("");
+
+                } else {
+                    alert("Veuillez fermer une conversation")
+                }
+            }
+        }
+
+        function send_private_message(element) {
+
+            var msg = $(element).prev().val();
+
+            $(element).prev().val("");
+
+            $(element).parent().parent().find(".vu").text("");
+
+            var receiver = $(element).parent().parent().find(".receiver_username").val();
+
+            var sender = $("span.username").text();
+
+            socket.emit('private_message',receiver+":"+sender+":"+msg);
+
+            $(element).parent().parent().find(".private_message").find("ul").append("<li><span class='me_txt'>Moi : </span>"+msg+"</li>")
+
+            //scroll window
+
+            var value= 0;
+
+            var last_li_top = $(element).parent().parent().find(".private_message").find("ul").find("li:last").offset().top;
+
+            $(element).parent().parent().find(".private_message").animate({"scrollTop":last_li_top+"px"},100);
+        }
+
+
+        function  new_private_received_msg(message) {
+
+            var sender = message.split(":");
+
+
+            if (!conversation_exist(sender[0].trim(),message)) {
+
+            sender = sender[0].trim();
+
+                var msg = message.split(":");
+                msg = msg[1];
+
+            if( $(".private_chat").length <= 2 ) {
+
+                var conversation = $(".private-chat-room-clone").find(".private_chat").clone();
+
+                $(conversation).find(".receiver_username").val(sender);
+
+                $(conversation).find(".private_message").find("ul").find("li").remove();
+
+                $(conversation).find(".private_message").find("ul").append("<li><span class='private-sender-username'>"+sender+" : </span>"+msg+"</li>")
+
+                $(conversation).find(".private_chat_title").find("b").html(" " + sender);
+
+
+                $("body").append(conversation);
+
+                if ($(".private_chat").length >= 2) {
+
+                    $(conversation).css("right", 320 + (408 * ($(".private_chat").length - 2)) + "px")
+
+                }
+
+                $(conversation).show();
+
+                $(conversation).find(".private_message").find("p").text("");
+
+            }else {
+                alert("Veuillez fermer une conversation")
+            }
+
+            }
+
+        }
+
+        function conversation_exist(sender,msg) {
+            var cnt=0;
+            $(".private_chat").find(".private_chat_title").find("b").each(function() {
+
+
+                if ($(this).text().trim() == sender) {
+
+                    msg = msg.split(":");
+                    msg = msg[1];
+
+                     $(this).parent().parent().find(".private_message").find("ul").append("<li><span class='private-sender-username'>"+sender+" : </span>"+msg+"</li>")
+                     $(this).parent().parent().find(".private_message").find("p.vu").text("");
+                     cnt++;
+
+                    //scroll window
+
+                    var value= 0;
+
+                    var last_li_top = $(this).parent().parent().find(".private_message").find("ul").find("li:last").offset().top;
+
+                    $(this).parent().parent().find(".private_message").animate({"scrollTop":last_li_top+"px"},100);
+                   }
+
+            });
+
+             return cnt>0;
+
+        }
+
+        function send_prmsg_enter(e,element) {
+
+            if (e.keyCode == 13) {
+
+                send_private_message($(element).next())
+            }
+        }
+
+        function close_conversation(element) {
+
+            $(element).parent().parent().remove();
+
+        }
+
+        function send_vu(element) {
+
+            var receiver = $(element).find("b").text().trim();
+            var sender = $("span.username").text();
+
+
+            var last_user = $(element).find(".private_message").find("ul").find("li:last").find("span").text();
+
+            var msg = receiver+":"+sender;
+
+            if(last_user != "Moi : ")       socket.emit("vu",msg);
+
+
+        }
+
+        function set_user_vu(username) {
+
+            console.log(username + "vu")
+            $(".private_chat").find("b").each(function() {
+
+
+                if ($(this).text().trim() == username) {
+
+
+                    $(this).parent().parent().find(".private_message").find("p").text("Vu.")
+                }
+
+            })
+        }
+    </script>
+
+</head>
+<body>
+
+<div class="room-header">
+    <h4 class="h4">NodeJs chat room | Welcome : <span class="username"><%= username%></span></h4>
+<div class="conversation-container"></div>
+</div>
+
+<div class="room-container">
+
+    <div class="messages-container">
+
+        <h4 class="h4">Messages sur le room</h4>
+        <div class="messages">
+
+            <ul>
+
+
+            </ul>
+
+        </div>
+        <div class="send-messages">
+            <div class="emoticone-container">
+
+                <img src="../images/emo1.jpg">
+                <img src="../images/emo2.jpg">
+                <img src="../images/emo3.jpg">
+                <img src="../images/emo4.jpg">
+                <img src="../images/emo5.jpg">
+
+            </div>
+<input type="text" class="form-control">
+            <button id="btn-send" class="btn btn-success">Envoyer</button>
+        </div>
+    </div>
+
+
+    <div class="user-container">
+        <div class="user-title">
+            <h5 class="h5"><span class="glyphicon glyphicon-user"></span> ONLINE USERS</h5>
+        </div>
+
+        <div class="user-info">
+        <ul>
+
+
+        </ul>
+        </div>
+
+    </div>
+
+    </div>
+
+<div class="private-chat-room-clone">
+<div class="private_chat" onclick="send_vu(this)">
+    <div class="private_chat_title"><span class="glyphicon glyphicon-user"></span><b></b><a href="#" class="private_close_btn" onclick="close_conversation(this)">Fermer</a></div>
+    <h3 class="h3">Messagerie privée</h3>
+    <input type="hidden" value="" class="receiver_username"/>
+    <div class="private_message">
+        <ul>
+
+        </ul>
+        <p class="vu"></p>
+    </div>
+    <div class="private_message_form">
+        <div class="private-emoticone-container">
+
+        </div>
+        <input type="text" class="private_txt form-control" onkeypress="send_prmsg_enter(event,this)"  />
+        <button class="btn btn-warning btn_private_send" onclick="send_private_message(this);">Envoyer</button>
+    </div>
+</div>
+</div>
+</body>
+</html>
